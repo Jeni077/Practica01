@@ -1,0 +1,221 @@
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+    <head th:replace="~{layout/plantilla :: head}"  style="color: #ccccff">
+        <title>Arboles</title>
+    </head>
+    <body>
+        <!-- 1 Sección para crear el boton de agregar... llamará a una ventana modal-->
+        <section th:fragment="botonesAgregar" class="py-4 mb-4 bg-light">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-3">   
+                        <button 
+                            type="button" 
+                            class="btn btn-success btn-block" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#agregarArboli">
+                            <i class="fas fa-plus  bg-success"></i> Agregar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2 Fragmento para agregar arboli, es la ventana modal -->
+        <section th:fragment="agregarArboli">
+            <div id="agregarArboli" 
+                 class="modal fade" 
+                 tabindex="-1" 
+                 aria-labelledby="exampleModalLabel" 
+                 aria-hidden="true">
+                <div class="modal-dialog modal-md">
+                    <div class="modal-content">
+                        <div class="modal-header bg-success text-success">
+                            <h5 class="modal-title">[[#{arboli.agregar}]]</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div> 
+                        <form th:action="@{/arboli/guardar}" th:object="${arboli}"
+                              method="POST" class="was-validated" enctype="multipart/form-data">
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label for="nombrecomun">[[#{arboli.nombrecomun}]]</label>
+                                    <input type="text" class="form-control" name="nombrecomun" required="true"/>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="tipoflor">[[#{arboli.tipoflor}]]</label>
+                                    <input type="text" class="form-control" name="tipoflor" required="true"/>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="tipomadera">[[#{arboli.tipomadera}]]</label>
+                                    <input type="text" class="form-control" name="tipomadera" required="true"/>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="activo">[[#{arboli.activo}]]</label>
+                                    <input class="form-check-input" type="checkbox" name="activo" id="activo"/>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="imagen">[[#{arboli.rutaImagen}]]</label>
+                                    <input class="form-control" type="file" name="imagenFile" onchange="readURL(this);"/>
+                                    <img id="blah" src="#" alt="your image" height="200"/>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-primary" type="submit">Guardar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3 Sección principal para mostrar la informaccion de la entidad arboli -->
+        <section th:fragment="listadoArbolis" id="arbolis">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-9">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>Registro de arboles</h4>
+                            </div>
+                            <div th:if="${arbolis != null and !arbolis.empty}">
+                                <table class="table table-striped table-hover">
+                                    <thead class="table-success">
+                                        <tr><th>#</th>
+                                            <th>Nombre comun</th>
+                                            <th>Tipo de flor</th>
+                                            <th>Tipo de madera</th>
+                                            <th>Estado real</th>
+                                            <th></th></tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="arboli, contador : ${arbolis}">
+                                            <td>[[${contador.count}]]</td>
+                                            <td>[[${arboli.nombrecomun}]]</td>
+                                            <td>[[${arboli.tipoflor}]]</td>
+                                            <td>[[${arboli.tipomadera}]]</td>
+
+                                            <td th:text="${arboli.activo} ? 'Activa' : 'Inactiva'" />
+                                            <td><a th:href="@{/arboli/eliminar/}+${arboli.idArboli}"
+                                                   class="btn btn-danger">
+                                                    <i class="fas fa-trash"></i> Eliminar</a>
+                                                <a th:href="@{/arboli/modificar/}+${arboli.idArboli}"
+                                                   class="btn btn-success">
+                                                    <i class="fas fa-pencil"></i> Actualizar</a></td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="text-center p-2" th:if="${arbolis == null or arbolis.empty}">
+                                <span>[[#{lista.vacia}]]</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+<div class="card text-center bg-light text-success mb-3">
+                            <div class="card-body">
+                                <h3>Arboles registrados</h3>
+                                <h4 class="fs-2"><i class="fas fa-users"></i> [[${totalArbolis}]]</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4 Fragmento que se utiliza en la página modifca.html -->
+       <section th:fragment="editarArboli">
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-8">
+                    <form method="POST"
+                          th:action="@{/arboli/guardar}" 
+                          th:object="${arboli}"
+                          class="was-validated"                          
+                          enctype="multipart/form-data">
+                        <input type="hidden" name="idArboli" th:field="*{idArboli}"/>
+                        <input type="hidden" name="rutaImagen" th:field="*{rutaImagen}"/>
+                        <section th:replace="~{arboli/fragmentos :: botonesEditar}"/>
+                        <div id=details>
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h4>[[#{accion.actualizar}]]</h4>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="mb-3">
+                                                    <label for="nombrecomun">[[#{arboli.nombrecomun}]]</label>
+                                                    <input type="text" class="form-control" 
+                                                           name="nombrecomun" th:field="*{nombrecomun}"
+                                                           required="true">
+                                                </div>
+                                                 <div class="mb-3">
+                                                    <label for="tipoflor">[[#{arboli.tipoflor}]]</label>
+                                                    <input type="text" class="form-control" 
+                                                           name="tipoflor" th:field="*{tipoflor}"
+                                                           required="true">
+                                                </div>
+                                                
+                                                 <div class="mb-3">
+                                                    <label for="tipomadera">[[#{arboli.tipomadera}]]</label>
+                                                    <input type="text" class="form-control" 
+                                                           name="tipomadera" th:field="*{tipomadera}"
+                                                           required="true">
+                                                </div>
+                                                
+                                                
+                                                
+                                                
+                                                <div class="mb-3">
+                                                    <label for="activo">[[#{arboli.activo}]]</label>
+                                                    <input class="form-check-input" 
+                                                           type="checkbox" 
+                                                           name="activo" 
+                                                           id="activo"
+                                                           th:field="*{activo}">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="imagen">[[#{arboli.rutaImagen}]]</label>
+                                                    <input class="form-control" type="file" name="imagenFile"
+                                                           onchange="readURL(this);" />
+                                                    <img id="blah" th:src="@{${arboli.rutaImagen}}" alt="your image" height="200"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5 Fragmento que se utiliza en el fragmento anterior -->
+       <section th:fragment="botonesEditar">
+            <div class="container py-4 mb-4 bg-light">
+                <div class="row">
+                    <div class="col-md-4 d-grid">
+                        <a th:href="@{/arboli/listado}" class="btn btn-primary">
+                            <i class="fas fa-arrow-left"></i> [[#{accion.regresar}]]
+                        </a>
+                    </div>
+                    <div class="col-md-4 d-grid">                                
+                        <a th:href="@{/arboli/eliminar/}+${arboli.idArboli}"
+                           class="btn btn-danger">
+                            <i class="fas fa-trash"></i> [[#{accion.eliminar}]]
+                        </a>
+                    </div>
+                    <div class="col-md-4 d-grid">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-check"></i> [[#{accion.guardar}]]
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </body>
+</html>
