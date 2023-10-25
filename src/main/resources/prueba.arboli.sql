@@ -3,14 +3,14 @@ drop schema if exists prueba;
 drop user if exists "usuario_practica";
 CREATE SCHEMA prueba ;
 
-/*Se crea un usuario para la base de datos llamado "usuario_prueba" y tiene la contraseña "Usuario_Clave."*/
+/*Se crea un usuario para la base de datos llamado "usuario_practica" y tiene la contraseña "la_Clave."*/
 create user 'usuario_practica'@'%' identified by 'la_Clave"';
 
-/*Se asignan los prvilegios sobr ela base de datos TechShop al usuario creado */
+/*Se asignan los prvilegios sobre la base de datos prueba al usuario creado */
 grant all privileges on prueba.* to 'usuario_practica'@'%';
 flush privileges;
 
-/* la tabla de categoria contiene categorias de productos*/
+/* la tabla de arbol contiene categorias de productos*/
 create table prueba.arboli (
   id_arboli INT NOT NULL AUTO_INCREMENT,
   nombrecomun VARCHAR(30) NOT NULL,
@@ -23,7 +23,7 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
 
-/*Se insertan 3 categorias de productos como ejemplo */
+/*Se insertan 5 tipos de arboles como ejemplo */
 INSERT INTO prueba.arboli (id_arboli,nombrecomun,tipoflor,tipomadera,ruta_imagen,activo) VALUES 
 ('1','Pino', 'Blanda','Perenne', 'https://4.bp.blogspot.com/-nmfMYSsxx2k/U3TknL9UlKI/AAAAAAAABxU/oX91vBD-5qw/s1600/pino.jpg', true), 
 ('2','Cedro', 'Blanda', 'Perenne', 'https://www.perfume-man.com/wp-content/uploads/2018/05/arbol-cedro-libano.jpg',true),

@@ -4,16 +4,14 @@
     <head th:replace="~{layout/plantilla :: head}">
         <title>TODO supply a title</title>
         <meta charset="UTF-8"/>
-        
+
     </head>
+    <!--Mostrar la lista arboles y los botones-->
     <body>
-    <header th:replace="~{layout/plantilla :: header}"/>
+        <header th:replace="~{layout/plantilla :: header}"/>
         <section th:replace="~{arboli/fragmentos :: botonesAgregar}"/>
-
         <section th:replace="~{arboli/fragmentos :: agregarArboli}"/>
-
-    <section th:replace="~{arboli/fragmentos :: listadoArbolis}"/>
-
+        <section th:replace="~{arboli/fragmentos :: listadoArbolis}"/>
 
     </body>
 </html>
